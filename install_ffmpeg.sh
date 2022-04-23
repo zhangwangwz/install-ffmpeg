@@ -200,9 +200,13 @@ cd ..
 
 git clone https://github.com/xiph/rav1e.git
 cd rav1e
+mkdir temp
 cargo build --release
 cargo install cargo-c
-cargo cinstall --release
+cargo cinstall --release --prefix=temp
+sudo cp temp/include/rav1e/* /usr/include/
+sudo cp temp/lib/* /usr/lib/
+sudo cp temp/lib/pkgconfig/* /usr/lib/aarch64-linux-gnu/pkgconfig/
 cd ..
 
 git clone https://github.com/AOMediaCodec/SVT-AV1.git
@@ -350,7 +354,7 @@ cd FFmpeg
 --enable-libopus \
 --enable-libpulse \
 --enable-librabbitmq \
---disable-librav1e \
+--enable-librav1e \
 --enable-librist \
 --enable-librsvg \
 --enable-librubberband \
