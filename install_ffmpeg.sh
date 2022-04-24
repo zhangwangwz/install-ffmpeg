@@ -23,7 +23,7 @@ libsrt-openssl-dev libssh-dev libtheora-dev libtlsh-dev libtwolame-dev libvidsta
 libvo-amrwbenc-dev libvpx-dev libxcb* libzimg* libzmq3-dev libzvbi-dev nasm \
 libtesseract-dev pocketsphinx libraspberrypi* libopenal-dev libclc-dev opencl-clhpp-headers \
 opencl-c-headers opencl-headers libomxil-bellagio-dev swig bison libgcrypt-dev \
-libcdio* libbz2-dev libglm-dev 
+libcdio* libbz2-dev libglm-dev doxygen
 
 sudo apt-get install -y autoconf automake libass-dev libfreetype6-dev libsdl2-dev \
 libtool libva-dev libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev \
@@ -33,6 +33,9 @@ libxcb-xfixes0-dev pkg-config texinfo zlib1g-dev
 pip install --upgrade pip
 pip install --upgrade ninja cython
 
+sudo rm -rf ffmpeg_deps
+sudo rm -rf FFmpeg
+sudo rm -rf ffmpeg
 mkdir ffmpeg_deps
 cd ffmpeg_deps
 
@@ -42,8 +45,7 @@ cd x264
 ./configure \
     --enable-pic \
     --enable-shared \
-    --enable-static \
-    --disable-asm
+    --enable-static 
 make --jobs=$(nproc --all)
 sudo make install
 cd ..
@@ -96,7 +98,6 @@ done
 sudo ./waf install
 cd ..
 
-
 git clone https://github.com/Netflix/vmaf.git --recursive
 cd vmaf/libvmaf
 meson build --buildtype release -Denable_float=true
@@ -104,14 +105,19 @@ ninja -vC build
 ninja -vC build test
 sudo ninja -vC build install
 cd ..
+cd ..
 
 #Install h.265
-#git clone https://bitbucket.org/multicoreware/x265_git.git
-#cd x265_git/build/linux
-#./make-Makefiles.bash
-#make --jobs=$(nproc --all)
-#sudo make install
-#cd ..
+git clone https://bitbucket.org/multicoreware/x265_git.git
+cd x265_git/source
+cmake -DCHECKED_BUILD=ON -DCMAKE_BUILD_TYPE=Release \
+-DENABLE_HDR10_PLUS=ON -DENABLE_LIBVMAF=ON -DENABLE_PIC=ON \
+-DENABLE_PIC=ON -DENABLE_PPA=ON -DENABLE_SVT_HEVC=ON \
+-DENABLE_TESTS=ON -DENABLE_VTUNE=ON .
+make --jobs=$(nproc --all)
+sudo make install
+cd ..
+cd ..
 
 git clone https://github.com/acoustid/chromaprint.git
 cd chromaprint
@@ -148,6 +154,8 @@ cd davs2/build/linux
 ./configure --disable-asm
 make --jobs=$(nproc --all)
 sudo make install
+cd ..
+cd ..
 cd ..
 
 git clone https://github.com/KhronosGroup/glslang.git --recursive
@@ -193,7 +201,7 @@ cd ..
 
 git clone https://github.com/uclouvain/openjpeg.git
 cd openjpeg
-cmake -DCMAKE_BUILD_TYPE=Release
+cmake -DCMAKE_BUILD_TYPE=Release .
 make --jobs=$(nproc --all)
 sudo make install
 cd ..
@@ -202,7 +210,7 @@ git clone https://github.com/xiph/rav1e.git
 cd rav1e
 mkdir temp
 cargo build --release
-cargo install cargo-c
+cargo install --upgrade cargo-c
 cargo cinstall --release --prefix=temp
 sudo cp temp/include/rav1e/* /usr/include/
 sudo cp temp/lib/* /usr/lib/
@@ -417,7 +425,10 @@ cd FFmpeg
 --enable-v4l2-m2m \
 --enable-nonfree \
 --disable-jni \
---disable-asm
+--enable-libx264 \
+--enable-libx265 \
+--enable-asm
 make --jobs=$(nproc --all)
 sudo make install
 cd ~
+sudo ldconfig
