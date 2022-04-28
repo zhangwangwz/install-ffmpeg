@@ -23,7 +23,7 @@ libsrt-openssl-dev libssh-dev libtheora-dev libtlsh-dev libtwolame-dev libvidsta
 libvo-amrwbenc-dev libvpx-dev libxcb* libzimg* libzmq3-dev libzvbi-dev nasm \
 libtesseract-dev pocketsphinx libraspberrypi* libopenal-dev libclc-dev opencl-clhpp-headers \
 opencl-c-headers opencl-headers libomxil-bellagio-dev swig bison libgcrypt-dev \
-libcdio* libbz2-dev libglm-dev doxygen
+libcdio* libbz2-dev libglm-dev doxygen libcjson-dev
 
 sudo apt-get install -y autoconf automake libass-dev libfreetype6-dev libsdl2-dev \
 libtool libva-dev libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev \
@@ -45,7 +45,8 @@ cd x264
 ./configure \
     --enable-pic \
     --enable-shared \
-    --enable-static 
+    --enable-static \
+    --disable-asm
 make --jobs=$(nproc --all)
 sudo make install
 cd ..
@@ -116,6 +117,7 @@ cmake -DCHECKED_BUILD=ON -DCMAKE_BUILD_TYPE=Release \
 -DENABLE_TESTS=ON -DENABLE_VTUNE=ON .
 make --jobs=$(nproc --all)
 sudo make install
+sudo cp x265.pc /usr/lib/aarch64-linux-gnu/pkgconfig/x265.pc
 cd ..
 cd ..
 
@@ -210,7 +212,7 @@ git clone https://github.com/xiph/rav1e.git
 cd rav1e
 mkdir temp
 cargo build --release
-cargo install --upgrade cargo-c
+cargo install cargo-c
 cargo cinstall --release --prefix=temp
 sudo cp temp/include/rav1e/* /usr/include/
 sudo cp temp/lib/* /usr/lib/
@@ -426,8 +428,8 @@ cd FFmpeg
 --enable-nonfree \
 --disable-jni \
 --enable-libx264 \
---enable-libx265 \
---enable-asm
+--disable-libx265 \
+--disable-asm
 make --jobs=$(nproc --all)
 sudo make install
 cd ~
